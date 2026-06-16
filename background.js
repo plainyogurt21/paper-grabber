@@ -102,6 +102,66 @@ function extractPdfFromTab(tabId) {
   });
 }
 
+const delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+// Wait until a tab finishes loading (or a timeout elapses).
+function waitForTabComplete(tabId, timeoutMs = 12000) {
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      chrome.tabs.onUpdated.removeListener(listener);
+      resolve();
+    };
+    const listener = (id, changeInfo) => {
+      if (id === tabId && changeInfo.status === 'complete') finish();
+    };
+    chrome.tabs.onUpdated.addListener(listener);
+    // It may already be complete by the time we start listening.
+    chrome.tabs.get(tabId).then(t => { if (t.status === 'complete') finish(); }).catch(finish);
+    setTimeout(finish, timeoutMs);
+  });
+}
+
+// Open the page in a background tab, let it render, and pull a downloadable
+// file out of it. Handles JS-rendered viewers (Sage reader), landing pages
+// (AHA/Nature), and interstitials/cookie-walls (PMC) that block a plain HEAD.
+// Returns a direct file URL, or null if nothing downloadable was found.
+async function navigateAndExtract(url) {
+  let tab;
+  try {
+    tab = await chrome.tabs.create({ url, active: false });
+  } catch {
+    return null;
+  }
+  const tabId = tab.id;
+
+  try {
+    await waitForTabComplete(tabId);
+    // Give late/JS-rendered content (PDF viewers, embeds) time to attach.
+    await delay(1500);
+
+    // 1) Did navigating resolve straight to a real file? (e.g. PMC .pdf links
+    //    that 403/HTML on HEAD but serve the PDF once cookies are set.)
+    const info = await chrome.tabs.get(tabId).catch(() => null);
+    const finalUrl = info?.url || url;
+    try {
+      const r = await fetch(finalUrl, { method: 'GET', credentials: 'include' });
+      const ct = (r.headers.get('content-type') || '').toLowerCase();
+      if (ct && !ct.includes('text/html')) return r.url || finalUrl;
+    } catch { /* fall through to DOM extraction */ }
+
+    // 2) Extract a PDF link/embed from the now-rendered DOM.
+    const found = await extractPdfFromTab(tabId);
+    if (found) return found;
+
+    return null;
+  } finally {
+    chrome.tabs.remove(tabId).catch(() => {});
+  }
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'download') {
     (async () => {
@@ -112,22 +172,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const ct = (headRes.headers.get('content-type') || '').toLowerCase();
 
         if (ct.includes('text/html')) {
-          // Layer 1: parse the static fetched HTML
+          // Layer 1: parse the static fetched HTML (fast path, no tab needed).
           const fromFetch = await extractPdfFromFetch(targetUrl);
           if (fromFetch) {
             targetUrl = fromFetch;
-          } else if (request.tabId) {
-            // Layer 2: run in the live tab DOM (handles JS-rendered viewers)
-            const fromTab = await extractPdfFromTab(request.tabId);
-            if (fromTab) {
-              targetUrl = fromTab;
+          } else {
+            // Layer 2: actually navigate to the page in a background tab, wait
+            // for it to render, then extract the file. Handles JS viewers,
+            // landing pages, and PMC interstitials that block a plain fetch.
+            const fromNav = await navigateAndExtract(targetUrl);
+            if (fromNav) {
+              targetUrl = fromNav;
             } else {
               sendResponse({ success: false, error: 'html_page' });
               return;
             }
-          } else {
-            sendResponse({ success: false, error: 'html_page' });
-            return;
           }
         }
       } catch {

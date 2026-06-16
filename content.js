@@ -1,5 +1,13 @@
 // content.js - Paper Grabber scraper
 
+// Guard against double-injection. content.js is registered as a content_script
+// (auto-injected at document_idle) AND injected programmatically by popup.js each
+// time the popup opens. Without this guard the second run re-declares EXCLUDE_CSS
+// and throws "Identifier 'EXCLUDE_CSS' has already been declared". The first
+// injection's message listener stays active, so a re-injection can safely no-op.
+if (!window.__paperGrabberInjected) {
+  window.__paperGrabberInjected = true;
+
 function slugify(text) {
   return text
     .toLowerCase()
@@ -47,7 +55,8 @@ function extractMetadata() {
     document.querySelector('time[datetime]')?.getAttribute('datetime')?.substring(0, 4) ||
     new Date().getFullYear().toString();
 
-  meta.baseName = `${slugify(meta.firstAuthor)}_${meta.year}_${slugify(meta.title)}`;
+  // Filename is the slugified title, truncated to the first 20 characters.
+  meta.baseName = slugify(meta.title).substring(0, 20) || 'untitled';
   return meta;
 }
 
@@ -235,3 +244,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   return true;
 });
+
+} // end double-injection guard
