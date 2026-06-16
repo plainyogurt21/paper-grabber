@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EGFR Mutant NSCLC Response to Fourth-Generation Inhibitors | Journal of Clinical Oncology</title>
+
+  <!-- These are the meta tags the scraper reads first -->
+  <meta name="citation_title" content="EGFR Mutant NSCLC Response to Fourth-Generation Inhibitors">
+  <meta name="citation_author" content="Zhang, Wei">
+  <meta name="citation_author" content="Patel, Arun R.">
+  <meta name="citation_author" content="Nakamura, Yuki">
+  <meta name="citation_publication_date" content="2024/03/15">
+  <meta name="citation_pdf_url" content="https://example-journal.org/content/papers/2024/zhang_egfr.pdf">
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Georgia, serif; max-width: 900px; margin: 0 auto; color: #1a1a1a; background: #fff; }
+
+    /* ---- NAV (should NOT produce downloads) ---- */
+    nav { background: #003057; color: #fff; padding: 12px 24px; display: flex; gap: 24px; font-family: Arial, sans-serif; font-size: 13px; }
+    nav a { color: #acd4f5; text-decoration: none; }
+
+    .journal-bar { background: #f0f4f8; border-bottom: 2px solid #003057; padding: 6px 24px; font-size: 12px; font-family: Arial, sans-serif; }
+    .journal-bar a { color: #003057; }
+
+    /* ---- ARTICLE HEADER ---- */
+    .article-header { padding: 32px 24px 16px; border-bottom: 1px solid #e0e0e0; }
+    .article-type { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #c0392b; font-family: Arial, sans-serif; }
+    h1.title { font-size: 26px; line-height: 1.3; margin: 10px 0; }
+    .authors { font-size: 14px; color: #444; margin-bottom: 6px; font-family: Arial, sans-serif; }
+    .authors a { color: #0055a5; }
+    .pub-info { font-size: 12px; color: #777; font-family: Arial, sans-serif; }
+
+    /* ---- DOWNLOAD BUTTONS (the good stuff) ---- */
+    .download-bar { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px 24px; margin: 20px 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-family: Arial, sans-serif; }
+    .download-bar strong { font-size: 13px; margin-right: 8px; }
+    .btn { display: inline-block; padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; text-decoration: none; }
+    .btn-primary { background: #003057; color: #fff; }
+    .btn-secondary { background: #fff; color: #003057; border: 1px solid #003057; }
+
+    /* ---- ABSTRACT ---- */
+    .abstract { padding: 20px 24px; }
+    .abstract h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: #003057; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; }
+    .abstract p { font-size: 15px; line-height: 1.75; color: #333; }
+
+    /* ---- BODY ---- */
+    .article-body { padding: 0 24px 24px; }
+    .article-body h2 { font-size: 18px; margin-top: 28px; }
+    .article-body p { font-size: 15px; line-height: 1.75; }
+
+    /* ---- SUPPLEMENTARY DATA (at the bottom, should be caught) ---- */
+    .supplementary { background: #f4f8ff; border: 1px solid #c8d8ee; border-radius: 6px; padding: 20px 24px; margin: 24px; }
+    .supplementary h3 { font-size: 15px; color: #003057; margin-bottom: 12px; }
+    .supp-list { list-style: none; padding: 0; margin: 0; }
+    .supp-list li { padding: 6px 0; border-bottom: 1px solid #dce8f4; font-size: 14px; font-family: Arial, sans-serif; }
+    .supp-list li:last-child { border-bottom: none; }
+    .supp-list a { color: #0055a5; }
+
+    /* ---- DATA AVAILABILITY (footer-adjacent) ---- */
+    .data-avail { padding: 16px 24px; border-top: 1px solid #e0e0e0; font-size: 13px; font-family: Arial, sans-serif; color: #555; }
+    .data-avail a { color: #0055a5; }
+
+    /* ---- FOOTER (should NOT produce downloads) ---- */
+    footer { background: #1a1a2e; color: #aaa; padding: 32px 24px; font-size: 12px; font-family: Arial, sans-serif; margin-top: 40px; }
+    footer a { color: #6a9fd8; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    /* ---- TEST PANEL ---- */
+    #test-panel {
+      position: fixed; top: 16px; right: 16px; width: 300px;
+      background: #0f1117; color: #e8eaf0; border-radius: 10px;
+      font-family: 'SF Mono', monospace; font-size: 11px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 9999; overflow: hidden;
+    }
+    #test-panel header { background: #1e2435; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+    #test-panel header span { font-weight: bold; color: #7b9ef8; font-size: 12px; }
+    #test-panel header small { color: #404660; }
+    #test-output { padding: 12px 14px; max-height: 400px; overflow-y: auto; line-height: 1.6; }
+    #test-output .key { color: #4caf82; }
+    #test-output .val { color: #9aa0be; }
+    #test-output .score { color: #e0a060; }
+    #test-output .type-main { color: #4caf82; }
+    #test-output .type-supplement { color: #5b9bd5; }
+    #test-output .type-pdf { color: #9b7fd5; }
+    #test-output hr { border-color: #252840; margin: 8px 0; }
+    #btn-run { display: block; width: 100%; padding: 10px; background: #4a6ef5; color: #fff; border: none; font-weight: bold; font-size: 12px; cursor: pointer; }
+    #btn-run:hover { background: #5a7ef8; }
+    #note { padding: 8px 14px; background: #161923; color: #555c7a; font-size: 10px; line-height: 1.5; border-top: 1px solid #1e2435; }
+  </style>
+</head>
+<body>
+
+<!-- NAV - links here should NOT be picked up -->
+<nav>
+  <a href="/login">Log In</a>
+  <a href="/subscribe">Subscribe</a>
+  <a href="/about">About JCO</a>
+  <a href="/cookie-policy">Cookie Policy</a>
+  <a href="/terms">Terms of Use</a>
+</nav>
+
+<div class="journal-bar">
+  <a href="/">Journal of Clinical Oncology</a> › Vol 42, No 8 › Article
+</div>
+
+<!-- ARTICLE HEADER -->
+<div class="article-header">
+  <div class="article-type">Original Article</div>
+  <h1 class="title">EGFR Mutant NSCLC Response to Fourth-Generation Inhibitors: A Multicenter Retrospective Analysis</h1>
+  <div class="authors">
+    <a href="/author/zhang-wei">Zhang W</a>,
+    <a href="/author/patel-arun">Patel AR</a>,
+    <a href="/author/nakamura-yuki">Nakamura Y</a>,
+    <a href="/author/okafor-chidi">Okafor CE</a>
+  </div>
+  <div class="pub-info">Published March 15, 2024 · DOI: 10.1200/JCO.2024.00000</div>
+</div>
+
+<!-- DOWNLOAD BAR - primary PDF links -->
+<div class="download-bar">
+  <strong>Download:</strong>
+  <a class="btn btn-primary" href="https://example-journal.org/content/papers/2024/zhang_egfr_fulltext.pdf">
+    Full Text PDF
+  </a>
+  <a class="btn btn-secondary" href="https://example-journal.org/content/papers/2024/zhang_egfr_supplementary.pdf">
+    Supplementary Data (PDF)
+  </a>
+  <a class="btn btn-secondary" href="https://example-journal.org/content/papers/2024/zhang_egfr_tables_S1-S4.docx">
+    Tables S1–S4 (DOCX)
+  </a>
+</div>
+
+<!-- ABSTRACT -->
+<div class="abstract">
+  <h2>Abstract</h2>
+  <p>
+    Fourth-generation EGFR inhibitors targeting C797S and compound mutations represent the next frontier in
+    treating NSCLC following osimertinib resistance. We retrospectively analyzed 214 patients across six centers
+    who received investigational fourth-generation agents after documented osimertinib failure, evaluating
+    objective response rate, progression-free survival, and circulating tumor DNA dynamics.
+  </p>
+</div>
+
+<!-- BODY -->
+<div class="article-body">
+  <h2>Introduction</h2>
+  <p>
+    Non-small cell lung cancer driven by EGFR mutations accounts for approximately 15% of NSCLC in Western
+    populations and up to 50% in East Asian cohorts. Third-generation inhibitors, particularly osimertinib,
+    have dramatically improved outcomes, yet acquired resistance invariably emerges, most commonly via the
+    C797S tertiary mutation.
+  </p>
+
+  <h2>Methods</h2>
+  <p>
+    All patients had centrally confirmed EGFR-mutant NSCLC with documented radiologic progression on osimertinib.
+    Molecular profiling was performed via ctDNA NGS (Guardant360) and tissue biopsy where feasible.
+    See <a href="https://example-journal.org/content/papers/2024/zhang_egfr_supplementary.pdf">Supplementary Methods</a>
+    for full protocol details.
+  </p>
+
+  <h2>Results</h2>
+  <p>
+    The overall ORR was 38% (95% CI: 31–45%). Median PFS was 5.4 months (IQR 3.1–8.7). Full response
+    data stratified by mutation subtype are provided in
+    <a href="https://example-journal.org/content/papers/2024/zhang_egfr_tables_S1-S4.docx">Table S1</a>.
+    Kaplan-Meier curves are shown in
+    <a href="https://example-journal.org/content/papers/2024/zhang_egfr_figures_S1-S6.pdf">Supplementary Figure S1</a>.
+  </p>
+</div>
+
+<!-- SUPPLEMENTARY SECTION (at bottom of article, not a nav) -->
+<div class="supplementary">
+  <h3>Supplementary Materials</h3>
+  <ul class="supp-list">
+    <li>
+      <a href="https://example-journal.org/content/papers/2024/zhang_egfr_supplementary.pdf">
+        Supplementary Methods and Results (PDF, 2.1 MB)
+      </a>
+    </li>
+    <li>
+      <a href="https://example-journal.org/content/papers/2024/zhang_egfr_tables_S1-S4.docx">
+        Tables S1–S4: Patient Characteristics and Response Data (DOCX, 184 KB)
+      </a>
+    </li>
+    <li>
+      <a href="https://example-journal.org/content/papers/2024/zhang_egfr_figures_S1-S6.pdf">
+        Figures S1–S6: Survival Curves and Waterfall Plots (PDF, 4.7 MB)
+      </a>
+    </li>
+    <li>
+      <a href="https://example-journal.org/content/papers/2024/zhang_egfr_data_S1.xlsx">
+        Data S1: Individual Patient ctDNA Dynamics (Excel, 890 KB)
+      </a>
+    </li>
+  </ul>
+</div>
+
+<!-- DATA AVAILABILITY (footer-adjacent, should still be caught) -->
+<div class="data-avail">
+  <strong>Data Availability:</strong> De-identified patient-level data are available upon request.
+  Full analysis code is deposited at
+  <a href="https://github.com/example/egfr-fourth-gen">GitHub</a>.
+  Supplementary analysis scripts:
+  <a href="https://example-journal.org/content/papers/2024/zhang_egfr_analysis_code.pdf">download PDF</a>.
+</div>
+
+<!-- FOOTER - should NOT produce downloads -->
+<footer>
+  <div class="footer-links">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Use</a>
+    <a href="/cookie-policy">Cookie Settings</a>
+    <a href="/accessibility">Accessibility</a>
+    <a href="/contact">Contact Us</a>
+    <a href="/sitemap.pdf">Site Map PDF</a>  <!-- edge case: a PDF in footer -->
+  </div>
+  <div>© 2024 American Society of Clinical Oncology. All rights reserved.</div>
+  <div style="margin-top:8px;">
+    <a href="/login">Sign In</a> · <a href="/subscribe">Subscribe</a>
+  </div>
+</footer>
+
+<!-- TEST PANEL - runs the scraper logic inline so you can test without the extension -->
+<div id="test-panel">
+  <header>
+    <span>🧪 Scraper Test Panel</span>
+    <small>No extension needed</small>
+  </header>
+  <div id="test-output">Click Run to test the scraper logic.</div>
+  <button id="btn-run">▶ Run Scraper</button>
+  <div id="note">
+    This panel runs the same scraper logic as content.js directly in the page.
+    Open DevTools console for full output.
+  </div>
+</div>
+
+<script>
+// Inline copy of content.js logic for testing without the extension installed.
+// Edit this to match content.js and reload — no extension reload needed.
+
+function slugify(text) {
+  return text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '_').replace(/_+/g, '_').trim().substring(0, 60);
+}
+
+function extractMetadata() {
+  const meta = {};
+  meta.title =
+    document.querySelector('meta[name="citation_title"]')?.content ||
+    document.querySelector('meta[property="og:title"]')?.content ||
+    document.querySelector('h1.title, h1')?.innerText ||
+    document.title || 'untitled';
+  meta.title = meta.title.split('|')[0].split(' - ')[0].trim();
+
+  const authorMeta =
+    document.querySelector('meta[name="citation_author"]')?.content ||
+    document.querySelector('meta[name="author"]')?.content;
+  if (authorMeta) {
+    const parts = authorMeta.split(',');
+    meta.firstAuthor = parts.length > 1 ? parts[0].trim() : authorMeta.split(' ').pop();
+  } else {
+    const authorEl = document.querySelector('.author-name, .contrib-author, [class*="author"] a, .authors a');
+    if (authorEl) { const n = authorEl.innerText.trim().split(' '); meta.firstAuthor = n[n.length - 1]; }
+    else meta.firstAuthor = 'Unknown';
+  }
+
+  meta.year =
+    document.querySelector('meta[name="citation_publication_date"]')?.content?.substring(0, 4) ||
+    document.querySelector('meta[name="citation_date"]')?.content?.substring(0, 4) ||
+    document.querySelector('meta[name="DC.Date"]')?.content?.substring(0, 4) ||
+    document.querySelector('time[datetime]')?.getAttribute('datetime')?.substring(0, 4) ||
+    new Date().getFullYear().toString();
+
+  meta.baseName = `${slugify(meta.firstAuthor)}_${meta.year}_${slugify(meta.title)}`;
+  return meta;
+}
+
+function scoreLink(href, text) {
+  const h = href.toLowerCase(), t = text.toLowerCase(), c = h + ' ' + t;
+  let score = 0;
+  if (h.includes('.pdf'))                                              score += 40;
+  if (h.includes('.docx') || (h.includes('.doc') && !h.includes('.docx'))) score += 40;
+  if (/supplement|supplementary|supporting.info|appendix/i.test(c))  score += 30;
+  if (/s\d+[._-]?(fig|table|data|file)/i.test(c))                   score += 25;
+  if (/download/i.test(c))                                            score += 15;
+  if (/full.text|full.article|view.pdf/i.test(c))                    score += 15;
+  if (/data.availability|extended.data/i.test(c))                    score += 20;
+  if (/pdf/i.test(c) && !h.includes('.pdf'))                          score += 10;
+  if (/article|paper|manuscript/i.test(c))                           score += 5;
+  if (/cookie|login|sign.?in|register|subscribe|copyright|terms|privacy/i.test(c)) score -= 60;
+  if (/cite.this|how.to.cite|citation.manager|export.citation/i.test(c)) score -= 40;
+  if (/share|tweet|facebook|linkedin|email.article/i.test(c))        score -= 30;
+  if (/correction|erratum|retraction/i.test(c))                      score -= 10;
+  if (h.startsWith('javascript') || h.startsWith('mailto'))          score -= 100;
+  if (h.startsWith('#'))                                              score -= 100;
+  return score;
+}
+
+function classifyType(href, text) {
+  const c = (href + ' ' + text).toLowerCase();
+  if (/supplement|supplementary|supporting.info|appendix|extended.data|data.s\d|table.s\d|figure.s\d|s\d+[._-]/i.test(c)) return 'supplement';
+  if (/full.text|full.article|view.pdf|download.pdf/i.test(c) || href.toLowerCase().includes('.pdf')) return 'main';
+  return 'pdf';
+}
+
+function findPDFLinks() {
+  const results = [];
+  const citationPdf = document.querySelector('meta[name="citation_pdf_url"]')?.content;
+  if (citationPdf) results.push({ url: citationPdf, type: 'main', label: 'Main PDF (meta)', score: 999 });
+
+  for (const link of document.querySelectorAll('a[href]')) {
+    const href = link.href || '';
+    const text = (link.innerText || link.title || link.getAttribute('aria-label') || '').trim();
+    const score = scoreLink(href, text);
+    if (score >= 20) results.push({ url: href, text, type: classifyType(href, text), label: text || href.split('/').pop(), score });
+  }
+
+  const byUrl = new Map();
+  for (const r of results) {
+    if (!byUrl.has(r.url) || byUrl.get(r.url).score < r.score) byUrl.set(r.url, r);
+  }
+
+  const typeOrder = { main: 0, supplement: 1, pdf: 2 };
+  return Array.from(byUrl.values()).sort((a, b) => {
+    const td = typeOrder[a.type] - typeOrder[b.type];
+    return td !== 0 ? td : b.score - a.score;
+  });
+}
+
+document.getElementById('btn-run').addEventListener('click', () => {
+  const meta = extractMetadata();
+  const links = findPDFLinks();
+  console.log('=== Paper Grabber Test ===');
+  console.log('Metadata:', meta);
+  console.log('Links found:', links);
+
+  const out = document.getElementById('test-output');
+  let html = `<div><span class="key">baseName:</span> <span class="val">${meta.baseName}</span></div>`;
+  html += `<div><span class="key">author:</span> <span class="val">${meta.firstAuthor}</span></div>`;
+  html += `<div><span class="key">year:</span> <span class="val">${meta.year}</span></div>`;
+  html += `<hr>`;
+  html += `<div><span class="key">links found: ${links.length}</span></div><br>`;
+
+  for (const l of links) {
+    const typeClass = `type-${l.type}`;
+    const short = l.url.split('/').pop().substring(0, 35);
+    html += `<div>
+      <span class="${typeClass}">[${l.type}]</span>
+      <span class="score"> score:${l.score}</span><br>
+      <span class="val">${short}</span>
+      ${l.label ? `<br><span style="color:#404660">${l.label.substring(0,40)}</span>` : ''}
+    </div><br>`;
+  }
+
+  out.innerHTML = html;
+});
+</script>
+</body>
+</html>

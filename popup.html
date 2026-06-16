@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      width: 340px;
+      background: #0f1117;
+      color: #e8eaf0;
+      font-size: 13px;
+    }
+
+    header {
+      padding: 13px 16px 10px;
+      border-bottom: 1px solid #1e2130;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    header h1 { font-size: 14px; font-weight: 600; color: #fff; }
+    header span.sub { font-size: 11px; color: #404660; margin-left: auto; }
+
+    #meta-section {
+      padding: 10px 16px 8px;
+      border-bottom: 1px solid #1e2130;
+    }
+    .label {
+      font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #404660; margin-bottom: 5px;
+    }
+    .folder-preview {
+      background: #161923; border: 1px solid #252840; border-radius: 6px;
+      padding: 7px 10px; font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px; color: #7b8ec8; word-break: break-all; line-height: 1.5;
+    }
+    .folder-preview .slash { color: #404660; }
+
+    #files-section { padding: 10px 16px; max-height: 200px; overflow-y: auto; }
+
+    .file-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 8px; border-radius: 5px; margin-bottom: 4px;
+      background: #161923; border: 1px solid transparent;
+      cursor: pointer; transition: border-color 0.12s;
+    }
+    .file-row:hover { border-color: #2a3050; }
+    .file-row.selected { border-color: #4a6ef5; background: #1a1f35; }
+    .file-row input[type="checkbox"] {
+      accent-color: #4a6ef5; width: 13px; height: 13px; flex-shrink: 0;
+    }
+    .file-badge {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      padding: 2px 5px; border-radius: 3px; flex-shrink: 0;
+    }
+    .badge-main       { background: #1a3a2a; color: #4caf82; }
+    .badge-supplement { background: #1a2a40; color: #5b9bd5; }
+    .badge-pdf        { background: #2a2030; color: #9b7fd5; }
+    .file-label {
+      flex: 1; overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap; color: #9aa0be; font-size: 12px;
+    }
+
+    #actions {
+      padding: 8px 16px 13px;
+      border-top: 1px solid #1e2130;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    #status {
+      font-size: 11px; color: #4caf82;
+      text-align: center; min-height: 15px;
+    }
+    #status.error { color: #e57373; }
+    #status.info  { color: #7b8ec8; }
+
+    button {
+      border: none; border-radius: 6px; padding: 9px 14px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.12s, transform 0.1s; width: 100%;
+    }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Primary: folder download */
+    #btn-download-folder {
+      background: #4a6ef5; color: #fff;
+    }
+    #btn-download-folder:hover:not(:disabled) { background: #5a7ef8; }
+
+    /* Secondary: flat download */
+    #btn-download-selected {
+      background: #1e2435; color: #8090c0;
+      border: 1px solid #252840; font-size: 12px; padding: 7px 14px;
+    }
+    #btn-download-selected:hover:not(:disabled) { background: #252840; color: #b0bce0; }
+
+    .empty-state {
+      padding: 14px; text-align: center;
+      color: #404660; font-size: 12px; line-height: 1.6;
+    }
+
+    .hint {
+      font-size: 10px; color: #404660; text-align: center; padding: 2px 0 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span>📄</span>
+  <h1>Paper Grabber</h1>
+  <span class="sub">v1.2</span>
+</header>
+
+<div id="meta-section">
+  <div class="label">Save Location</div>
+  <div class="folder-preview" id="filename-preview">
+    Scanning page…
+  </div>
+</div>
+
+<div id="files-section">
+  <div class="label" style="margin-bottom:8px">Files Found</div>
+  <div id="file-list"><div class="empty-state">Scanning…</div></div>
+</div>
+
+<div id="actions">
+  <div id="status"></div>
+  <button id="btn-download-folder" disabled>
+    ⬇ Download Selected → Folder
+  </button>
+  <div class="hint">Saves all files into one named folder</div>
+  <button id="btn-download-selected" disabled>
+    Save flat (no folder)
+  </button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
