@@ -2,6 +2,16 @@
 
 let scrapedData = null;
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/_+/g, '_')
+    .trim()
+    .substring(0, 60);
+}
+
 function getExtension(url) {
   const u = url.toLowerCase().split('?')[0]; // strip query params before checking extension
   if (u.endsWith('.docx')) return '.docx';
@@ -35,6 +45,8 @@ function sendMsg(msg) {
 //                    Author_Year_Title/Author_Year_Title_supplement.pdf
 function assignFilenames(pdfLinks, baseName) {
   let mainIdx = 0, suppIdx = 0, otherIdx = 0;
+  const usedNames = new Map();
+
   pdfLinks.forEach(file => {
     const ext = getExtension(file.url);
     if (file.type === 'main') {
@@ -47,8 +59,14 @@ function assignFilenames(pdfLinks, baseName) {
       suppIdx++;
       file._name = `${baseName}${suffix}${ext}`;
     } else {
+      // Generic PDF links: name by link text so each file gets a meaningful name
       otherIdx++;
-      file._name = `${baseName}_file_${otherIdx}${ext}`;
+      const rawLabel = file.label || file.text || '';
+      const slug = slugify(rawLabel).substring(0, 60);
+      const base = slug || `file_${otherIdx}`;
+      const count = usedNames.get(base) || 0;
+      usedNames.set(base, count + 1);
+      file._name = count === 0 ? `${base}${ext}` : `${base}_${count + 1}${ext}`;
     }
   });
 }

@@ -178,7 +178,6 @@ function classifyType(href, text) {
   if (/supplement|supplementary|supporting.info|appendix|suppl[_/]|suppl_file|sdc\d*|extended.data|data\.s\d|table\.s\d|figure\.s\d|s\d+[._-]|analysis.code|_code\.|supp.meth/i.test(combined)) {
     return 'supplement';
   }
-  if (h.includes('.pdf')) return 'main';
   return 'pdf';
 }
 
